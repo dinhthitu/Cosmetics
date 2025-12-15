@@ -32,6 +32,7 @@ public class AuthService {
     ModelMapper modelMapper;
     CartService cartService;
     AuthenticationManager authenticationManager;
+    EmailService emailService;
 
     public RegisterResponse register(Register request) {
         var user = userRepository.findByEmail(request.getEmail());
@@ -47,9 +48,9 @@ public class AuthService {
         } else {
             user.setRoles(Set.of(Roles.CUSTOMER));
         }
-
         userRepository.save(user);
         cartService.createCart(user);
+        emailService.sendWelcomeMessage(request.getEmail(), request.getUsername());
         return modelMapper.map(user, RegisterResponse.class);
     }
 
